@@ -1,20 +1,9 @@
-FROM alpine
+FROM alpine:edge
 
 MAINTAINER Yosuke Matsusaka <yosuke.matsusaka@gmail.com>
 
-RUN apk add --no-cache tini bash ipset iproute2 curl unzip grep gawk lsof
-
-ENV IPRANGE_VERSION 1.0.3
-
-RUN apk add --no-cache --virtual .iprange_builddep autoconf automake make gcc musl-dev && \
-    curl -L https://github.com/firehol/iprange/releases/download/v$IPRANGE_VERSION/iprange-$IPRANGE_VERSION.tar.gz | tar zvx -C /tmp && \
-    cd /tmp/iprange-$IPRANGE_VERSION && \
-    ./configure --prefix= --disable-man && \
-    make && \
-    make install && \
-    cd && \
-    rm -rf /tmp/iprange-$IPRANGE_VERSION && \
-    apk del .iprange_builddep
+RUN sed -i -e s/community/testing/g /etc/apk/repositories && \
+    apk add --no-cache tini bash ipset iproute2 iprange curl unzip grep gawk lsof
 
 ENV FIREHOL_VERSION 3.1.3
 
