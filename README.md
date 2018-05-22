@@ -1,7 +1,5 @@
 Docker image to download and update most recent FireHOL IP list
 
-[![](https://images.microbadger.com/badges/image/devrt/firehol-update-ipsets.svg)](https://microbadger.com/images/devrt/firehol-update-ipsets "Get your own image badge on microbadger.com")
-
 Background
 ----------
 
@@ -9,24 +7,23 @@ FireHOL update-ipsets is a great script to download and update most recent iplis
 
 http://iplists.firehol.org/
 
-This docker image will run update-ipsets and apply the ipset to the local computer periodically.
+This docker image can run update-ipsets and apply the ipset.
 
 Usage
 -----
 
 First, lets download and start a firehol-update-ipsets container.
-By entering the following command, permanent periodic update process will be created.
+
+Lets enable the ipsets. For example, we enable protection by firehol_level2 and tor_exits iplist.
 
 ```
 $ docker volume create firehol-update-upsets
-$ docker run --name firehol-update-ipsets -it -d --restart=always --cap-add=NET_ADMIN --net=host -v firehol-update-ipsets:/etc/firehol/ipsets devrt/firehol-update-ipsets
+$ docker run --rm -it -v firehol-update-ipsets:/etc/firehol/ipsets radhus/update-ipsets enable firehol_level2 tor_exits
 ```
 
-Then, lets enable the ipset. For example, we enable protection by firehol_level2 and tor_exits iplist.
-
+To synchronize, schedule running:
 ```
-$ docker exec firehol-update-ipsets enable firehol_level2
-$ docker exec firehol-update-ipsets enable tor_exits
+$ docker run --rm -it -v firehol-update-ipsets:/etc/firehol/ipsets --cap-add=NET_ADMIN --net=host radhus/update-ipsets -s
 ```
 
 Above command will apply the ipset to iptables automatically, so be careful when you enable the ipset which contains private IPs (e.g. firehol_level1).
@@ -40,13 +37,6 @@ Lets check that the ipset applied to the kernel correctly.
 ```
 $ sudo ipset list -t
 $ sudo iptables-save
-```
-
-From now on, the ipset is updated periodically to the most recent one by the update-ipsets script.
-You can confirm the update by the following command.
-
-```
-$ docker logs firehol-update-ipsets
 ```
 
 Written by
