@@ -5,11 +5,9 @@ MAINTAINER Yosuke Matsusaka <yosuke.matsusaka@gmail.com>
 RUN sed -i -e s/community/testing/g /etc/apk/repositories && \
     apk add --no-cache bash ipset iproute2 iprange curl unzip grep gawk lsof
 
-ENV FIREHOL_VERSION 3.1.5
-
-RUN apk add --no-cache --virtual .firehol_builddep autoconf automake make && \
-    curl -L https://github.com/firehol/firehol/releases/download/v$FIREHOL_VERSION/firehol-$FIREHOL_VERSION.tar.gz | tar zvx -C /tmp && \
-    cd /tmp/firehol-$FIREHOL_VERSION && \
+RUN apk add --no-cache --virtual .firehol_builddep autoconf automake make git && \
+    git clone --depth=1 https://github.com/firehol/firehol /tmp/firehol && \
+    cd /tmp/firehol && \
     ./autogen.sh && \
     ./configure --prefix= --disable-doc --disable-man && \
     make && \
